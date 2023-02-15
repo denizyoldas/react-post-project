@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 function Header() {
   return (
-    <header className="mb-8  flex items-center justify-between border-b bg-white p-4 text-black drop-shadow-md">
-      <h1 className="text-2xl font-bold">Title</h1>
+    <header className="flex items-center justify-between border-b bg-white p-4 text-black drop-shadow-md">
+      <h1 className="text-2xl font-bold">Post View App</h1>
       <nav>
         <ul className="flex space-x-4">
           <li>
