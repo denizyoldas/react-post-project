@@ -4,6 +4,7 @@ import User from './pages/user'
 import UserDetail from './pages/user-detail'
 import NotFound from './pages/not-found'
 import Header from './components/header'
+import GoTop from './components/UI/go-top'
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+
+      <GoTop />
     </div>
   )
 }

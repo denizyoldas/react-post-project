@@ -3,19 +3,17 @@ import { useInfiniteQuery } from 'react-query'
 import Filter from '../components/filter'
 import Button from '../components/UI/button'
 import Loading from '../components/UI/loading'
-import { Post } from '../types/post.model'
 import NextPage from '../lib/next-page'
-import { User } from '../types/user.model'
 
-interface HomeProps {
+interface ListProps {
   queryKey: string
   searchKeys: string[]
   className?: string
-  renderItem: (item: Post | User) => JSX.Element
-  getFunction: (pageParam?: { page?: number; limit?: number }) => Promise<any>
+  renderItem: (item: any) => JSX.Element
+  getFunction: (pageParam?: any) => Promise<any>
 }
 
-export const Home: React.FC<HomeProps> = ({
+export const List: React.FC<ListProps> = ({
   queryKey,
   searchKeys,
   className,
@@ -23,8 +21,16 @@ export const Home: React.FC<HomeProps> = ({
   getFunction
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
+
+  const fetchData = async ({
+    pageParam: { page = 0, limit = 20 } = {}
+  } = {}) => {
+    const response = await getFunction({ page, limit })
+    return response
+  }
+
   const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } =
-    useInfiniteQuery(queryKey, ({ pageParam }) => getFunction(pageParam), {
+    useInfiniteQuery(queryKey, fetchData, {
       getNextPageParam: NextPage
     })
 
@@ -32,20 +38,18 @@ export const Home: React.FC<HomeProps> = ({
     data?.pages
       .flatMap(page => page.data)
       .filter((item: any) =>
-        searchKeys.some(
-          key =>
-            item[key].toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1
-        )
+        searchKeys.some(key => {
+          const value = key.split('.').reduce((o, i) => o[i], item)
+          return value?.toLowerCase().includes(searchTerm.toLowerCase())
+        })
       ) ?? []
 
   return (
     <>
       <Filter onChange={setSearchTerm} />
-      <div className={className}>
-        {filteredData.map(renderItem)}
+      {isLoading && <Loading />}
 
-        {isLoading && <Loading />}
-      </div>
+      <div className={className}>{filteredData.map(renderItem)}</div>
 
       {isFetchingNextPage && <Loading />}
       <div className="flex w-full items-center justify-center pt-10">
