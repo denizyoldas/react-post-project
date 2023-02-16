@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import Filter from '../components/filter'
+import Button from '../components/UI/button'
 import Loading from '../components/UI/loading'
 import UserCard from '../components/user-card'
 import { getUsers } from '../lib/service'
@@ -21,7 +22,7 @@ export default function UserPage() {
   const { data, fetchNextPage, hasNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery('users', fetchUsers, {
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage.total === lastPage.page * lastPage.limit) {
+        if (lastPage.total < (lastPage.page + 1) * lastPage.limit) {
           return undefined
         }
         return {
@@ -39,21 +40,8 @@ export default function UserPage() {
         return fullName.includes(searchTerm)
       }) ?? []
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [data])
-
-  // window.addEventListener('scroll', handleScroll)
-  const handleScroll = (e: any) => {
-    if (
-      e.target.documentElement.scrollHeight -
-        (e.target.documentElement.scrollTop + window.innerHeight) <
-        10 &&
-      hasNextPage
-    ) {
+  const loadMore = () => {
+    if (hasNextPage) {
       fetchNextPage()
     }
   }
@@ -65,12 +53,17 @@ export default function UserPage() {
   return (
     <>
       <Filter onChange={val => setSearchTerm(val)} />
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-16 md:grid-cols-3 md:gap-8">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {filteredUsers.map(user => (
           <UserCard key={user.id} user={user} />
         ))}
       </div>
       {isFetchingNextPage && <Loading />}
+      <div className="flex w-full items-center justify-center pt-10">
+        <Button variant="primary" onClick={loadMore} disabled={!hasNextPage}>
+          Load More
+        </Button>
+      </div>
     </>
   )
 }
