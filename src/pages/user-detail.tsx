@@ -28,8 +28,11 @@ export default function UserDetail() {
   }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <button className="absolute top-20 left-0 p-4" onClick={backHandle}>
+    <div className="flex h-screen flex-col items-center">
+      <button
+        className="absolute top-20 left-0 p-4 text-white"
+        onClick={backHandle}
+      >
         Back
       </button>
       <UserDetailCard user={data} />
