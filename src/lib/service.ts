@@ -29,8 +29,14 @@ export const getUser = async (id: string): Promise<Userdetail> => {
   return data
 }
 
-export const getPosts = async (): // page: Pagination
-Promise<ServerResponse<Post[]>> => {
-  const { data } = await api.get('/post')
+export const getPosts = async (
+  page: Pagination
+): Promise<ServerResponse<Post[]>> => {
+  const { data } = await api.get('/post', {
+    params: {
+      limit: page.limit,
+      page: page.page
+    }
+  })
   return data
 }
